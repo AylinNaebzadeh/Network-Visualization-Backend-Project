@@ -223,3 +223,18 @@ def label_degree_values(request):
                 "max": max_degree
             })
         return Response(data)
+
+
+@api_view(['GET'])
+def label_degree_distribution(request, label):
+    if request.method == 'GET':
+        G = read_data()
+
+        nodes = [n for n in G.nodes() if G.nodes[n]['label'] == label]
+
+        degree_sequence = sorted([d for n, d in G.degree(nodes)], reverse=True)
+        degreeCount = Counter(degree_sequence)
+        data = [{"Degree": deg, "Frequency": cnt} for deg, cnt in degreeCount.items()]
+
+        data.sort(key=lambda x: x["Degree"])
+        return Response(data)

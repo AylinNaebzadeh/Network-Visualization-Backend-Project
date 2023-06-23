@@ -10,4 +10,5 @@ urlpatterns = [
     path('node_labels/', node_labels, name='get the percent of nodes for each label'),
     path('label_clustering/', label_clustering, name='get average CC for nodes for each label'),
     path('label_degree_values/', label_degree_values, name='get degree values for nodes for each label'),
+    path('label_degree_distribution/<str:label>/', label_degree_distribution, name='get the degree distribution for each label'),
 ]
