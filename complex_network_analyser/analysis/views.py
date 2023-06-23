@@ -12,7 +12,7 @@ from operator import itemgetter
 import pickle
 import json
 import community as louvain_community
-
+import EoN
 
 def read_data():
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -238,3 +238,92 @@ def label_degree_distribution(request, label):
 
         data.sort(key=lambda x: x["Degree"])
         return Response(data)
+
+
+@api_view(['GET'])
+def sis_epidemic(request):
+    if request.method == 'GET':
+        G = read_data()
+        # Set the initial conditions for the SI model
+        gamma = 1.
+        tau = 0.2
+        initial_infected_nodes = [n for n in G.nodes() if G.nodes[n]['label'] == 'L1']  # initial set of infected nodes
+        # Simulate the spread of the epidemic on the network
+        t, S, I = EoN.fast_SIS(G, tau, gamma, initial_infected_nodes, tmin=0, tmax=2000)
+        print(f"THE t in SIS MODEL IS: {t}")
+        print(f"THE S in SIS MODEL IS: {S}")
+        print(f"THE I in SIS MODEL IS: {I}")
+
+        t_selected = [t[0]]
+        S_selected = [S[0]]
+        I_selected = [I[0]]
+        for i in range(1, len(t)):
+            if t[i] - t_selected[-1] >= 50:
+                t_selected.append(int(t[i]))
+                S_selected.append(S[i])
+                I_selected.append(I[i])
+
+        data = []
+        for i in range(len(t_selected)):
+            data.append({
+                "name": "S",
+                "t": str(t_selected[i]),
+                "count": S_selected[i]
+            })
+
+        for i in range(len(t_selected)):
+            data.append({
+                "name": "I",
+                "t": str(t_selected[i]),
+                "count": I_selected[i]
+            })
+        return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def sir_epidemic(request):
+    if request.method == 'GET':
+        G = read_data()
+        p = 0.5  # probability of infection
+        r = 0.5  # probability of recovery
+        initial_infected_nodes = [n for n in G.nodes() if G.nodes[n]['label'] == 'L1']  # initial set of infected nodes
+
+        # Simulate the spread of the epidemic on the network
+        t, S, I, R = EoN.fast_SIR(G, p, r, initial_infecteds=initial_infected_nodes, tmax=2000, tmin=0)
+        print(f"THE t in SIR MODEL IS: {t}")
+
+        t_selected = [t[0]]
+        S_selected = [S[0]]
+        I_selected = [I[0]]
+        R_selected = [R[0]]
+
+        for i in range(1, len(t)):
+            if t[i] - t_selected[-1] >= 50:
+                t_selected.append(int(t[i]))
+                S_selected.append(S[i])
+                I_selected.append(I[i])
+                R_selected.append(R[i])
+        
+        data = []
+        for i in range(len(t)):
+            data.append({
+                "name": "S",
+                "t": str(t[i]),
+                "count": S[i]
+            })
+
+        for i in range(len(t)):
+            data.append({
+                "name": "I",
+                "t": str(t[i]),
+                "count": I[i]
+            })
+
+        for i in range(len(t)):
+            data.append({
+                "name": "R",
+                "t": str(t[i]),
+                "count": R[i]
+            })
+
+        return Response(data, status=status.HTTP_200_OK)

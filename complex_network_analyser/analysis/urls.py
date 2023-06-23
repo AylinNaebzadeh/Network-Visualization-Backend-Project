@@ -11,4 +11,6 @@ urlpatterns = [
     path('label_clustering/', label_clustering, name='get average CC for nodes for each label'),
     path('label_degree_values/', label_degree_values, name='get degree values for nodes for each label'),
     path('label_degree_distribution/<str:label>/', label_degree_distribution, name='get the degree distribution for each label'),
+    path('sis_epidemic/', sis_epidemic, name='plot SIS epidemic'),
+    path('sir_epidemic/', sir_epidemic, name='plot SIR epidemic'),
 ]
