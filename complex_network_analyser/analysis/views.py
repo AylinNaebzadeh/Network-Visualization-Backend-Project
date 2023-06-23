@@ -11,6 +11,7 @@ from collections import Counter
 from operator import itemgetter
 import pickle
 import json
+import community as louvain_community
 
 
 def read_data():
@@ -140,4 +141,24 @@ def degree_distribution(request):
             print("The sum of frequencies is equal to the number of nodes")
         else:
             print("The sum of frequencies is not equal to the number of nodes")
+        return Response(result, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def community_weight(request):
+    if request.method == 'GET':
+        G = read_data()  # function to read your network data
+        if isinstance(G, nx.DiGraph):
+            G = G.to_undirected()
+        partition = louvain_community.best_partition(G)
+        communities = []
+        for com in set(partition.values()):
+            communities.append(set(nodes for nodes in partition.keys() if partition[nodes] == com))
+        community_weights = []
+        for community in communities:
+            weight = len(community)
+            community_weights.append(weight)
+        weight_count = Counter(community_weights)
+        result = [{'#Communities': v, 'Weight': k} for k, v in weight_count.items()]
+        result = sorted(result, key=lambda x: x['Weight'])
         return Response(result, status=status.HTTP_200_OK)
