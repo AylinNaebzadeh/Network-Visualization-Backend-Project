@@ -7,4 +7,6 @@ urlpatterns = [
     path('top_5_nodes_based_on_several_measures/', top_5_nodes_based_on_several_measures, name="get top five nodes table"),
     path('degree_distribution/', degree_distribution, name='plot degree distribution'),
     path('community_weight/', community_weight, name='get community with their weight'),
+    path('node_labels/', node_labels, name='get the percent of nodes for each label'),
+    path('label_clustering/', label_clustering, name='get average CC for nodes for each label'),
 ]

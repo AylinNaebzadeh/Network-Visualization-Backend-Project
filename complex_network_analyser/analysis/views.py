@@ -7,7 +7,7 @@ import os
 import networkx as nx
 import statistics
 from itertools import chain
-from collections import Counter
+from collections import Counter, defaultdict
 from operator import itemgetter
 import pickle
 import json
@@ -161,4 +161,37 @@ def community_weight(request):
         weight_count = Counter(community_weights)
         result = [{'#Communities': v, 'Weight': k} for k, v in weight_count.items()]
         result = sorted(result, key=lambda x: x['Weight'])
+        return Response(result, status=status.HTTP_200_OK)
+
+"""
+    Label Analysis
+"""
+
+@api_view(['GET'])
+def node_labels(request):
+    if request.method == 'GET':
+        G = read_data()  # function to read your network data
+        labels = [data['label'] for n, data in G.nodes(data=True)]
+        label_count = Counter(labels)
+        total_count = sum(label_count.values())
+        result = [{'type': k, 'value': v / total_count * 100} for k, v in label_count.items()]
+        return Response(result, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def label_clustering(request):
+    if request.method == 'GET':
+        G = read_data()  # function to read your network data
+        clustering = nx.clustering(G)
+        label_clustering = defaultdict(list)
+        for n, data in G.nodes(data=True):
+            label = data['label']
+            cc = clustering[n]
+            label_clustering[label].append(cc)
+        result = []
+        labels = ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'Unknown']
+        for i, label in enumerate(labels):
+            cc_avg = sum(label_clustering[label]) / len(label_clustering[label])
+            result.append({'key': str(i + 1), 'label': label, 'cc_avg': cc_avg})
+        
         return Response(result, status=status.HTTP_200_OK)
