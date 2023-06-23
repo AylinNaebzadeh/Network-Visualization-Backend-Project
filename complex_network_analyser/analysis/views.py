@@ -195,3 +195,31 @@ def label_clustering(request):
             result.append({'key': str(i + 1), 'label': label, 'cc_avg': cc_avg})
         
         return Response(result, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def label_degree_values(request):
+    if request.method == 'GET':
+        G = read_data()
+        degree_values = {}
+
+        for node, degree in G.degree():
+            label = G.nodes[node]['label']
+            if label not in degree_values:
+                degree_values[label] = []
+            degree_values[label].append(degree)
+
+        data = []
+        for i, label in enumerate(sorted(degree_values.keys())):
+            degrees = degree_values[label]
+            average_degree = sum(degrees) / len(degrees)
+            max_degree = max(degrees)
+            min_degree = min(degrees)
+            data.append({
+                "key": str(i+1),
+                "label": label,
+                "avg": average_degree,
+                "min": min_degree,
+                "max": max_degree
+            })
+        return Response(data)

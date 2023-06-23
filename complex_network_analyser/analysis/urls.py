@@ -9,4 +9,5 @@ urlpatterns = [
     path('community_weight/', community_weight, name='get community with their weight'),
     path('node_labels/', node_labels, name='get the percent of nodes for each label'),
     path('label_clustering/', label_clustering, name='get average CC for nodes for each label'),
+    path('label_degree_values/', label_degree_values, name='get degree values for nodes for each label'),
 ]
