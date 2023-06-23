@@ -124,5 +124,20 @@ def top_5_nodes_based_on_several_measures(request):
                 measure_dict[f'id{j + 1}'] = data['node']
                 measure_dict[f'value{j + 1}'] = data['value']
             result.append(measure_dict)
-            
+
+        return Response(result, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def degree_distribution(request):
+    if request.method == 'GET':
+        G = read_data()  # function to read your network data
+        degree_sequence = [d for n, d in G.degree()]
+        degree_count = Counter(degree_sequence)
+        result = [{'Degree': k, 'Frequency': v} for k, v in sorted(degree_count.items())]
+        total_frequency = sum([item['Frequency'] for item in result])
+        if total_frequency == G.number_of_nodes():
+            print("The sum of frequencies is equal to the number of nodes")
+        else:
+            print("The sum of frequencies is not equal to the number of nodes")
         return Response(result, status=status.HTTP_200_OK)
