@@ -3,5 +3,5 @@ from django.urls import path, include
 from .views import *
 
 urlpatterns = [
-    path('', read_data, name="read data"),
+    path('general_statistical_info/', general_statistical_info, name="get general statistical information"),
 ]
