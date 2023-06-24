@@ -54,18 +54,48 @@ def general_statistical_info(request):
         result = {
             "nodes_count": G.number_of_nodes(),
             "edges_count": G.number_of_edges(),
-            "avg_in_degree": avg_in_degree_value,
-            "avg_out_degree": avg_out_degree_value,
-            "density": nx.density(G),
+            "avg_in_degree": float("{:.6f}".format(avg_in_degree_value)),
+            "avg_out_degree": float("{:.6f}".format(avg_out_degree_value)) ,
+            "density": float("{:.6f}".format(nx.density(G))),
             "diameter": network_diameter,
-            "avg_shortest_path_length": average_shortest_path_length,
-            "avg_cc": nx.average_clustering(G),
-            "transitivity": nx.transitivity(G),
-            "assotativity": nx.degree_pearson_correlation_coefficient(G),
-            "degree_centralization": centralization
+            "avg_shortest_path_length": float("{:.6f}".format(average_shortest_path_length)),
+            "avg_cc": float("{:.6f}".format(nx.average_clustering(G))),
+            "transitivity": float("{:.6f}".format(nx.transitivity(G))),
+            "assortiativity": float("{:.6f}".format(nx.degree_pearson_correlation_coefficient(G))),
+            "degree_centralization": float("{:.6f}".format(centralization))
         }
+        print("+++++++++++++++++++++ END ++++++++++++++++++++++++")
         return Response(result, status=status.HTTP_200_OK)
 
+
+@api_view(['GET'])
+def convert_graph(G):
+    pos = nx.spring_layout(G)
+    data = {"nodes": [], "edges": []}
+    for node in G.nodes:
+        data["nodes"].append({
+            "id": str(node),
+            "olabel": G.nodes[node]["label"],
+            "size": 10,
+            "x": pos[node][0] * 1000,
+            "y": pos[node][1] * 1000
+        })
+    for edge in G.edges:
+        data["edges"].append({
+            "source": str(edge[0]),
+            "target": str(edge[1]),
+            "weight": 2.5,
+            "startPoint": {
+                "x": pos[edge[0]][0] * 1000,
+                "y": pos[edge[0]][1] * 1000
+            },
+            "endPoint": {
+                "x": pos[edge[1]][0] * 1000,
+                "y": pos[edge[1]][1] * 1000
+            }
+        })
+
+    return Response(data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def top_5_nodes_based_on_several_measures(request):
