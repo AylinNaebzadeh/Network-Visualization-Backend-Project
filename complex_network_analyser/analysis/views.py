@@ -69,7 +69,8 @@ def general_statistical_info(request):
 
 
 @api_view(['GET'])
-def convert_graph(G):
+def convert_graph(request):
+    G = read_data()
     pos = nx.spring_layout(G)
     data = {"nodes": [], "edges": []}
     for node in G.nodes:
