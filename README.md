@@ -8,12 +8,12 @@ The full **project report** can be found here:
 
 🔗 [Project Report PDF](https://github.com/AylinNaebzadeh/Network-Visualization-Backend-Project/blob/main/99522185_Aylin_Naebzadeh_Project.pdf)
 
-The backend is implemented as a **Django REST API**, which provides data and computations for the frontend network visualization app.
+The backend is implemented as a **Django REST API**, which provides data and computations for the [frontend network visualization app](https://github.com/AylinNaebzadeh/Network-Visualization-Frontend-Project). The APIs are implemented in ```complex_network_analyzer/analysis/views.py``` file.
 
 ---
 
 ## Dataset
-
+For this project, we were given two Excel files. 
 ### `nodes.xlsx`
 
 The dataset contains node information, including node IDs and labels. The dataset has 8 distinct labels from L1 to L7, plus Unknown label.
